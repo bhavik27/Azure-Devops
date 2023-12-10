@@ -1,65 +1,102 @@
-# Day3 - Azure Repos
 
-# Checkout the video below for Day3
+# 🚀 Azure DevOps Build Pipeline - Build and Deploy a YouTube Clone 
 
-[![Azure DevOps Repos](https://img.youtube.com/vi/vN6iY5y4h9Y/sddefault.jpg)](https://youtu.be/vN6iY5y4h9Y)
+## Check out the video below for Day4 👇
 
-## What is Azure repos?
+[![Day4/16 - Azure DevOps Build Pipeline](https://img.youtube.com/vi/3Nv-FzzrqYU/sddefault.jpg)](https://youtu.be/3Nv-FzzrqYU)
 
-**Azure Repos is a set of version control tools that you can use to manage your code, just like GitHub**. Whether your software project is large or small, using version control as soon as possible is a good idea.
+## Steps to set the infrastructure
+- Login to VSCode or any other IDE of your choice
+- Run the below commands to download the application code
+  ```
+  mkdir day4_youtube_clone; cd day4_youtube_clone
+  git init
+  git clone https://github.com/piyushsachdeva/Youtube_Clone
+  ```
+- Create a project in Azure DevOps for Day4 and push the code by running the below commands on VSCode:
+  ```
+  git remote add origin $YOURAZUREREPO
+  git push -u origin all
+  ```
+  Note: Make sure to update your Azure repo in the above command
 
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/552cf47f-77cc-467f-82e4-6ef8b59c252a)
+- Go to the Azure Portal and Create the Azure App Service by following the instructions in the video
 
+- Implement the build pipeline using the classic editor
 
-Version control systems are software that help you track changes you make in your code over time. As you edit your code, you tell the version control system to take a snapshot of your files. The version control system saves that snapshot permanently, so you can recall it later if you need it. Use version control to save your work and coordinate code changes across your team.
+- Understand the use of service connection and service principal
 
-Even if you are working on a personal project, version control helps you stay organized as you fix bugs and develop new features. Version control keeps your development history so you can quickly review and even roll back to any code version.
-
-- Helps you track changes in the codebase
-- Maintains the history of your codebase, who made the changes, what changes were made, why the changes were made, etc
-- Helps you stay organized
-- Gives you the ability to rollback the changes as needed
-
-## Azure DevOps Demo Generator
-**Use these steps to load dummy data into your Azure DevOps project. We will use this data in the demo.**
-
-1. Navigate to https://azuredevopsdemogenerator.azurewebsites.net. This utility site will automate the creation of a new Azure DevOps project within your account that is prepopulated with content (work items, repos, etc.) required for the lab. 
-
-2. Sign in using the Microsoft account associated with your Azure DevOps subscription.
-
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/33feacfa-47bb-4861-b87d-d026e1eb36ee)
-
-3. Accept the permission requests for accessing your subscription.
-
-4. Select the PartsUnlimited template and click Select Template.
-
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/9bb9e1bd-cee1-4f18-ac5d-36163b36552e)
-
-5. Click Create Project and wait for the process to complete.
-
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/b27fc6a5-0c6c-4cde-8ad9-8d11d935d7f5)
+![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/9c20aa32-3932-4d1c-b3a9-0abdcd93f5c7)
 
 
-## Git vs. TFVC
-
-Azure Repos supports two types of Version Control:
-- Git
-- TFVC ( Team Foundation Version Control)
-
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/25b0ec44-7542-4fb6-af47-9f3d59ebc9a3)
+**Note: You must set the app settings WEBSITE_DYNAMIC_CACHE=0 and WEBSITE_LOCAL_CACHE_OPTION=Never to disable all file caching**
 
 
-### Git
-Git is the most popular distributed version control system, which allows developers to download the entire code repository locally with all the versions and make the changes remotely/offline. Changes can be synced to the remote server afterward.
+## Structure of Azure DevOps build Pipeline
 
-To interact with Git, you can make use of Git clients such as Git for Windows, VSCode, etc
-Git provides a version control system, but you need a hosting service to host your codebase(repositories). You can use git hosting services such as GitHub, Azure Repos, Bitbucket, Gitlab, etc.
-
-### TFVC
-Another type of version control system is TFVC, a centralized version control. In TFVC, only a single codebase version is downloaded locally, historical data is maintained on the central server. You can host TFVC on hosting services such as Perforce, SVC, Azure Repos, etc.
+![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/d812d598-9f2e-4e64-80b7-893653f8eadd)
 
 
-## Working with branches
+*  A trigger tells a Pipeline to run. It could be CI or Scheduled, manual(if not specified), or after another build finishes.
+*  A pipeline is made up of one or more stages. A pipeline can deploy to one or more environments.
+*  A stage organizes jobs in a pipeline, and each stage can have one or more jobs.
+*  Each job runs on one agent, such as Ubuntu, Windows, macOS, etc. A job can also be agentless.
+*  Each agent runs a job that contains one or more steps.
+*  A step can be a task or script and is the smallest building block of a pipeline.
+*  A task is a pre-packaged script that performs an action, such as invoking a REST API or publishing a build artifact.
+*  An artifact is a collection of files or packages published by a run.
 
-![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/b39d56b3-19e7-49f1-9c42-99c183f01bbf)
+![image](https://github.com/piyushsachdeva/AzureDevOps-Zero-to-Hero/assets/40286378/9930aa48-91e9-4370-8f85-406ad0e8df9c)
+
+
+## Pipeline code used in the demo
+
+``` YAML
+trigger: 
+- main
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Npm@1
+      inputs:
+        command: 'install'
+    - task: Npm@1
+      inputs:
+        command: 'custom'
+        customCommand: 'run build'
+
+    
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: 'build'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: Deploy 
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Tech Tutorials With Piyush (9e9c27ce-e0c8-4171-a368-ad16977ec849)'
+        appType: 'webAppLinux'
+        WebAppName: 'TechTutorialsWithPiyush'
+        packageForLinux: '$(System.ArtifactsDirectory)/drop'
+        RuntimeStack: 'STATICSITE|1.0'
+```
+
 
